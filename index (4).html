@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mas Masarap Pa Sa Kuya Mo – Graham Balls</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:'Segoe UI', Arial, sans-serif;
+  background:
+    linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+    url("https://i.postimg.cc/bJGY5hGL/Chat-GPT-Image-Feb-7-2026-09-26-46-AM.png");
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  color:#fff;
+}
+
+header{text-align:center;padding:30px 20px;}
+.container{padding:20px;max-width:1100px;margin:auto;}
+
+.flavors{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:25px;
+}
+
+.card{
+  background:rgba(255,255,255,0.95);
+  color:#333;
+  border-radius:18px;
+  padding:15px;
+  text-align:center;
+}
+
+.card img{
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  border-radius:14px;
+}
+
+.price{font-weight:bold;color:#d2691e;}
+.quantity{margin:10px 0;display:flex;justify-content:center;gap:10px;}
+.quantity button{
+  padding:5px 12px;border:none;
+  background:#d2691e;color:white;
+  border-radius:8px;cursor:pointer;
+}
+
+.order-btn{
+  margin-top:10px;padding:12px;width:100%;
+  border:none;background:#d2691e;
+  color:white;border-radius:10px;
+}
+
+.summary{
+  background:rgba(255,255,255,0.95);
+  color:#333;border-radius:16px;
+  padding:20px;margin-top:30px;
+}
+
+.final-order{
+  margin-top:10px;padding:15px;width:100%;
+  background:#ff9800;border:none;
+  border-radius:14px;font-size:18px;color:white;
+  cursor:pointer;
+}
+
+.reset-btn{
+  margin-top:10px;padding:12px;width:100%;
+  background:#e53935;border:none;
+  border-radius:14px;font-size:16px;color:white;
+  cursor:pointer;
+}
+
+footer{text-align:center;padding:15px;margin-top:40px;font-size:14px;}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍡 Mas Masarap Pa Sa Kuya Mo</h1>
+  <p>Gawang Bahay</p>
+</header>
+
+<div class="container">
+
+<div class="flavors">
+
+  <div class="card" data-flavor="Chocolate">
+    <img src="https://i.postimg.cc/VNr3QLRH/Messenger-creation-1A31C725-3653-407E-A887-8133EA9EFD85.jpg">
+    <h3>Chocolate</h3>
+    <div class="price">₱10 / pcs</div>
+    <div class="quantity">
+      <button onclick="changeQty(this,-1)">-</button>
+      <span class="qty">1</span>
+      <button onclick="changeQty(this,1)">+</button>
+    </div>
+    <button class="order-btn" onclick="addToCart(this)">Add to Order</button>
+  </div>
+
+  <div class="card" data-flavor="Milk">
+    <img src="https://i.postimg.cc/J429gHJh/Chat-GPT-Image-Feb-6-2026-10-09-07-PM.png">
+    <h3>Milk</h3>
+    <div class="price">₱10 / pcs</div>
+    <div class="quantity">
+      <button onclick="changeQty(this,-1)">-</button>
+      <span class="qty">1</span>
+      <button onclick="changeQty(this,1)">+</button>
+    </div>
+    <button class="order-btn" onclick="addToCart(this)">Add to Order</button>
+  </div>
+
+  <div class="card" data-flavor="Classic">
+    <img src="https://i.postimg.cc/bJGY5hGL/Chat-GPT-Image-Feb-7-2026-09-26-46-AM.png">
+    <h3>Classic</h3>
+    <div class="price">₱10 / pcs</div>
+    <div class="quantity">
+      <button onclick="changeQty(this,-1)">-</button>
+      <span class="qty">1</span>
+      <button onclick="changeQty(this,1)">+</button>
+    </div>
+    <button class="order-btn" onclick="addToCart(this)">Add to Order</button>
+  </div>
+
+</div>
+
+<!-- SUMMARY -->
+<div class="summary">
+  <h3>🧾 Order Summary</h3>
+  <div id="summaryList">Wala pang order</div>
+  <h4 id="totalPrice">Total: ₱0</h4>
+
+  <button class="final-order" onclick="finalOrder()">📩 Place Final Order</button>
+  <button class="reset-btn" onclick="resetOrder()">🔄 Reset Order</button>
+</div>
+
+<!-- INFO -->
+<div class="summary">
+  <h3>📍 Address</h3>
+  <p>Subic Zambales, Barangay Calapacuan</p>
+
+  <h3>💸 GCash Payment</h3>
+  <p>
+    Name: Lee Jhay Soriano<br>
+    GCash: 09925148088
+  </p>
+</div>
+
+</div>
+
+<footer>© 2026 Mas Masarap Pa Sa Kuya Mo</footer>
+
+<!-- 🔊 SOUND EFFECTS -->
+<audio id="addSound" src="https://www.myinstants.com/media/sounds/click.mp3"></audio>
+<audio id="resetSound" src="https://www.myinstants.com/media/sounds/click.mp3"></audio>
+<audio id="orderSound" src="https://www.myinstants.com/media/sounds/click.mp3"></audio>
+
+<script>
+/* ===== MAIN SCRIPT ===== */
+const cart = {};
+const PRICE = 10;
+
+const addSound = document.getElementById("addSound");
+const resetSound = document.getElementById("resetSound");
+const orderSound = document.getElementById("orderSound");
+
+function play(sound){
+  sound.currentTime = 0;
+  sound.play().catch(()=>{});
+}
+
+function changeQty(btn, delta){
+  const qtySpan = btn.parentElement.querySelector('.qty');
+  let qty = parseInt(qtySpan.textContent);
+  qty += delta;
+  if(qty < 1) qty = 1;
+  qtySpan.textContent = qty;
+}
+
+function addToCart(btn){
+  play(addSound);
+
+  const card = btn.closest('.card');
+  const flavor = card.dataset.flavor;
+  const qtySpan = card.querySelector('.qty');
+  const addQty = parseInt(qtySpan.textContent);
+
+  cart[flavor] = (cart[flavor] || 0) + addQty;
+
+  card.querySelector('.price').textContent =
+    `₱${cart[flavor] * PRICE} (${cart[flavor]} pcs)`;
+
+  qtySpan.textContent = 1;
+  updateSummary();
+}
+
+function updateSummary(){
+  let html = "";
+  let total = 0;
+
+  for(let f in cart){
+    const sub = cart[f] * PRICE;
+    total += sub;
+    html += `• ${f}: ${cart[f]} pcs = ₱${sub}<br>`;
+  }
+
+  document.getElementById("summaryList").innerHTML =
+    html || "Wala pang order";
+  document.getElementById("totalPrice").textContent =
+    `Total: ₱${total}`;
+}
+
+function resetOrder(){
+  play(resetSound);
+
+  for(let f in cart) delete cart[f];
+
+  document.querySelectorAll(".card").forEach(card=>{
+    card.querySelector(".price").textContent = "₱10 / pcs";
+    card.querySelector(".qty").textContent = "1";
+  });
+
+  document.getElementById("summaryList").textContent = "Wala pang order";
+  document.getElementById("totalPrice").textContent = "Total: ₱0";
+}
+
+function finalOrder(){
+  if(Object.keys(cart).length === 0){
+    alert("❌ Walang laman ang order");
+    return;
+  }
+
+  play(orderSound);
+
+  let msg =
+`Hello ma'am/sir, good day! 🍡
+Welcome to Mas Masarap Pa Sa Kuya Mo
+
+I want to order:
+`;
+
+  let total = 0;
+
+  for(let f in cart){
+    const sub = cart[f] * PRICE;
+    total += sub;
+    msg += `• ${f}: ${cart[f]} pcs = ₱${sub}\n`;
+  }
+
+  msg += `\nTotal: ₱${total}`;
+
+  navigator.clipboard.writeText(msg).then(()=>{
+    alert("✅ Order copied! Paste sa Messenger");
+    window.open("https://www.facebook.com/share/189BqqMcwR/","_blank");
+  });
+}
+</script>
+
+</body>
+</html>
+
